@@ -1,5 +1,6 @@
 package com.xin.view;
 
+import cn.hutool.json.JSONUtil;
 import com.xin.ZkClientWrap;
 import com.xin.ZkNode;
 import com.xin.util.AlertUtils;
@@ -57,7 +58,7 @@ public class NodeInfoEditProxy {
         for (Button commandButton : commandButtons) {
             commandButton.setOnAction(event -> {
                 String command = commandButton.getText()
-                                              .trim();
+                        .trim();
                 try {
                     String result = CommandUtils.result(command, zkClientWrap.getZkConf());
                     AlertUtils.showInfoAlert(command + " 结果", result);
@@ -75,7 +76,11 @@ public class NodeInfoEditProxy {
         String value = zkClientWrap.readData(nodePath, stat);
         Platform.runLater(() -> {
             zkPathTextField.setText(nodePath);
-            zkNodeDataTextArea.setText(String.valueOf(value));
+            try {
+                zkNodeDataTextArea.setText(JSONUtil.formatJsonStr(String.valueOf(value)));
+            } catch (Exception ex) {
+                zkNodeDataTextArea.setText(String.valueOf(value));
+            }
             zkNodeStatTextArea.setText(formatStat(stat));
         });
     }
@@ -106,29 +111,29 @@ public class NodeInfoEditProxy {
 
     private String formatStat(Stat stat) {
         return String.format("cZxid = %X\n" +
-                                     "\nctime = 0x%s\n" +
-                                     "mZxid = 0x%X\n" +
-                                     "mtime = 0x%s\n" +
-                                     "pZxid = 0x%X\n" +
-                                     "cversion = %d\n" +
-                                     "dataVersion = %d\n" +
-                                     "aclVersion = %d\n" +
-                                     "ephemeralOwner = 0x%X\n" +
-                                     "dataLength = %d\n" +
-                                     "numChildren = %d",
-                             stat.getCzxid(),
-                             simpleDateFormat.get()
-                                             .format(new Date(stat.getCtime())),
-                             stat.getMzxid(),
-                             simpleDateFormat.get()
-                                             .format(new Date(stat.getMtime())),
-                             stat.getPzxid(),
-                             stat.getCversion(),
-                             stat.getVersion(),
-                             stat.getAversion(),
-                             stat.getEphemeralOwner(),
-                             stat.getDataLength(),
-                             stat.getNumChildren()
+                        "\nctime = 0x%s\n" +
+                        "mZxid = 0x%X\n" +
+                        "mtime = 0x%s\n" +
+                        "pZxid = 0x%X\n" +
+                        "cversion = %d\n" +
+                        "dataVersion = %d\n" +
+                        "aclVersion = %d\n" +
+                        "ephemeralOwner = 0x%X\n" +
+                        "dataLength = %d\n" +
+                        "numChildren = %d",
+                stat.getCzxid(),
+                simpleDateFormat.get()
+                        .format(new Date(stat.getCtime())),
+                stat.getMzxid(),
+                simpleDateFormat.get()
+                        .format(new Date(stat.getMtime())),
+                stat.getPzxid(),
+                stat.getCversion(),
+                stat.getVersion(),
+                stat.getAversion(),
+                stat.getEphemeralOwner(),
+                stat.getDataLength(),
+                stat.getNumChildren()
         );
     }
 
@@ -137,7 +142,7 @@ public class NodeInfoEditProxy {
             TreeItem<ZkNode> currentTreeItem = getCurrentTreeItem();
             if (currentTreeItem != null) {
                 updateDate(currentTreeItem.getValue()
-                                          .getPath());
+                        .getPath());
             }
         });
     }
